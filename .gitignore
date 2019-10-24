@@ -1,0 +1,11 @@
+.vscode
+pin.log
+src/obj-intel64
+example/pin.log
+example/image_map
+example/iptrace
+example/keyexp-test
+example/memtrace
+example/results.txt
+example/summary.log
+example/taint
