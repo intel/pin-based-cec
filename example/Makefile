@@ -8,3 +8,7 @@ clean:
 
 run:
 	$(PIN_ROOT)/pin -t ../src/obj-intel64/CECTraceTool.so -f aes128_key_expansion -s summary.log -- ./keyexp-test
+
+branch_example:
+	$(PIN_ROOT)/pin -t ../src/obj-intel64/CECTraceTool.so -f aes128_key_checksum -s summary.log -- ./keyexp-test
+	python ../src/post_process.py --branch results.txt

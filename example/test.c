@@ -68,6 +68,21 @@ void aes128_key_expansion(const uint32_t* key, uint32_t* key_schedule) {
     }
 }
 
+// Example for detecting a branch
+// Compute the checksum of the key
+// Note: Just a demonstration of a rare branch that may be tainted.
+// Do NOT implement a checksum in this manner
+uint32_t aes128_key_checksum(const uint32_t * key) {
+    uint32_t checksum = 0;
+    for (uint32_t i = 0; i < AES128_KEY_SIZE_IN_DWORDS; i++) {
+        checksum ^= key[i];
+    }
+    // This is a rare branch that has a low probability of being hit in tests
+    if (checksum == 0) {
+        checksum = 1;
+    }
+    return checksum;
+}
 
 int main(void) {
     for (uint32_t iter = 0; iter < 10; iter++) {
@@ -113,6 +128,9 @@ int main(void) {
         // Call the function to expand the key to fill the key schedule.
         aes128_key_expansion((const uint32_t*)key, key_schedule);
 
+        // Call the function to compute the checksum
+        uint32_t checksum = aes128_key_checksum(key);
+
         // Tell Pin-based CEC that we are done using all the secrets we marked earlier, so it can stop tracking them.
         PinBasedCEC_ClearSecrets();
 
@@ -126,6 +144,8 @@ int main(void) {
             printf("\n");
         }
         printf("\n");
+
+        printf("Checksum: %08X\n", checksum);
 
         // Cleanup our allocations.
         free(key);

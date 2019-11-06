@@ -162,7 +162,8 @@ void tat_instrument_operand(INS ins, xed_decoded_inst_t const* const xedd,
     if ((INS_IsDirectBranch(ins) || INS_IsDirectCall(ins) || cat == XED_CATEGORY_COND_BR) &&
         (access == TAT_OPERAND_WRITTEN ||
          access == TAT_OPERAND_READ_AND_WRITTEN)) {
-      return;
+      // Commenting this out to allow tainted branches to be identified
+      //return;
     }
 
     // Set instr fields
