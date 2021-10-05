@@ -17,6 +17,7 @@
 #include "taint_semantics.h"
 #include "tracer.h"
 #include "visit_counter.h"
+#include "pin_version.h"
 
 #include "tat_instr.h"
 
@@ -417,25 +418,43 @@ void makeLogDirectories(void) {
   retval = OS_GetFileAttributes("memtrace/", &attr);
   if ((retval.generic_err != OS_RETURN_CODE_NO_ERROR) ||
       ((attr & OS_FILE_ATTRIBUTES_EXIST) == 0)) {
-    OS_MkDir("memtrace/", OS_FILE_PERMISSION_TYPE_READ |
-                              OS_FILE_PERMISSION_TYPE_WRITE |
-                              OS_FILE_PERMISSION_TYPE_EXECUTE);
+	#if PIN_PRODUCT_VERSION_MAJOR < 4
+	  	#if PIN_PRODUCT_VERSION_MINOR <= 13
+		    OS_MkDir("memtrace/", OS_FILE_PERMISSION_TYPE_READ | OS_FILE_PERMISSION_TYPE_WRITE | OS_FILE_PERMISSION_TYPE_EXECUTE);
+		#else
+		    OS_MkDir("memtrace/", OS_FILE_PERMISSION_TYPE_ALL_USER);
+    		#endif		    
+    	#else
+		OS_MkDir("memtrace/", OS_FILE_PERMISSION_TYPE_ALL_USER);
+	#endif
   }
 
   retval = OS_GetFileAttributes("iptrace/", &attr);
   if ((retval.generic_err != OS_RETURN_CODE_NO_ERROR) ||
       ((attr & OS_FILE_ATTRIBUTES_EXIST) == 0)) {
-    OS_MkDir("iptrace/", OS_FILE_PERMISSION_TYPE_READ |
-                             OS_FILE_PERMISSION_TYPE_WRITE |
-                             OS_FILE_PERMISSION_TYPE_EXECUTE);
+	#if PIN_PRODUCT_VERSION_MAJOR < 4
+	  	#if PIN_PRODUCT_VERSION_MINOR <= 13
+		    OS_MkDir("iptrace/", OS_FILE_PERMISSION_TYPE_READ | OS_FILE_PERMISSION_TYPE_WRITE | OS_FILE_PERMISSION_TYPE_EXECUTE);
+		#else
+		    OS_MkDir("iptrace/", OS_FILE_PERMISSION_TYPE_ALL_USER);
+    		#endif		    
+    	#else
+		OS_MkDir("iptrace/", OS_FILE_PERMISSION_TYPE_ALL_USER);
+	#endif
   }
 
   retval = OS_GetFileAttributes("taint/", &attr);
   if ((retval.generic_err != OS_RETURN_CODE_NO_ERROR) ||
       ((attr & OS_FILE_ATTRIBUTES_EXIST) == 0)) {
-    OS_MkDir("taint/", OS_FILE_PERMISSION_TYPE_READ |
-                           OS_FILE_PERMISSION_TYPE_WRITE |
-                           OS_FILE_PERMISSION_TYPE_EXECUTE);
+	#if PIN_PRODUCT_VERSION_MAJOR < 4
+	  	#if PIN_PRODUCT_VERSION_MINOR <= 13
+		    OS_MkDir("taint/", OS_FILE_PERMISSION_TYPE_READ | OS_FILE_PERMISSION_TYPE_WRITE | OS_FILE_PERMISSION_TYPE_EXECUTE);
+		#else
+		    OS_MkDir("taint/", OS_FILE_PERMISSION_TYPE_ALL_USER);
+    		#endif		    
+    	#else
+		OS_MkDir("taint/", OS_FILE_PERMISSION_TYPE_ALL_USER);
+	#endif
   }
 }
 
