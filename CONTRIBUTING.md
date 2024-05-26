@@ -2,7 +2,7 @@
 
 Pin-Based Constant Execution Checker (Pin-Based CEC) welcomes all contributors to improve the project.
 
-Before contributing, please review and abide by the [Code of Conduct](https://01.org/blogs/2018/intel-covenant-code).
+Before contributing, please review and abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Contributing features or fixes
 

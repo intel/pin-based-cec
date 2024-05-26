@@ -108,3 +108,11 @@ NOTES / CAVEATS
 
 - __Tail call elimination__
 If the Function Under Test has been optimized with tail call elimination (and therefore does not have a closing RET instruction), PIN will not be able to detect the end of the function, and so the analysis will not function correctly. This caveat only applies to the Function Under Test itself (the function passed as a parameter to Pin-based CEC), not subfunctions or other functions called during the execution of the Function Under Test.
+
+Code of Conduct
+---------------
+
+Intel has adopted the Contributor Covenant as the Code of Conduct for all of its open source projects.
+
+See [CODE OF CONDUCT](CODE_OF_CONDUCT.md) for more information.
+
