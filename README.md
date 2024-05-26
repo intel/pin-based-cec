@@ -3,6 +3,11 @@ Pin-based Constant Execution Checker (Pin-based CEC)
 
 Pin-based Constant Execution Checker (Pin-based CEC) is a dynamic binary instrumentation tool that checks for non-constant execution and memory-access patterns while a program is running. It does this by using the [Intel Pin framework](https://www.intel.com/content/www/us/en/developer/articles/tool/pin-a-dynamic-binary-instrumentation-tool.html) to trace every instruction that a targeted subroutine executes, logging all instruction pointers and memory addresses that get accessed, and comparing logs across subroutine invocations to ensure a constant execution profile. The tool uses taint analysis to determine if the execution differences are secret-dependent, to cut down on false positives.
 
+Development model
+-----------------
+
+We use a "tagged release" development model. This essentially means that only commits explicitly tagged as releases are recommended for use in production. Full list of releases is available here: [Pin-based CEC releases](https://github.com/intel/pin-based-cec/releases). All other commits are development-quality and should only be used for development process (e.g., contributions).
+
 Dependencies
 ------------
 
@@ -16,19 +21,25 @@ Building
 
 1. Download Intel Pin from https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-downloads and extract it somewhere.
 
-2. Clone the source and make sure git submodules are fetched by making the clone with
+2. Get the sources
 
-```bash
-git clone --recurse-submodules https://github.com/intel/pin-based-cec
-```
+   - Download and unpack a released version from the [Releases section](https://github.com/intel/pin-based-cec/releases).
 
-or
+   - Alternatively, clone the repository while making sure git submodules are fetched:
 
-```bash
-git clone https://github.com/intel/pin-based-cec
-git submodule init
-git submodule update
-```
+      ```bash
+      git clone --recurse-submodules https://github.com/intel/pin-based-cec
+      ```
+
+      or
+
+      ```bash
+      git clone https://github.com/intel/pin-based-cec
+      git submodule init
+      git submodule update
+      ```
+
+   - Check out a tag corresponding to the release you are interested in (full list is in the [Releases section](https://github.com/intel/pin-based-cec/releases))
 
 3. Use make to build the pintool
 
