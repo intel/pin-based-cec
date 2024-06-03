@@ -1,50 +1,45 @@
 Pin-based Constant Execution Checker (Pin-based CEC) Usage Example
 ==================================================================
 
-This example demonstrates how to use Pin-based CEC to check for secret-dependent execution in a naive implementation of AES key expansion that uses a lookup-table-based Sbox. The key expansion is implemented as three functions in test.c: aes128_key_expansion(), which fills out the Rijndael key schedule, rot_word(), which left-rotates a dword by 8 bits, and sub_word(), which replaces the bytes of a dword with the results of an Sbox transformation. Because sub_word() uses the secret-dependent input as an index into a lookup table in memory to compute the Sbox transformation, the input into the Sbox operation may be recovered via a cache-based side channel attack. This is a side channel vulnerability that can leak an AES key.
+This example demonstrates how to use Pin-based CEC to check for secret-dependent execution in a naive implementation of AES key expansion that uses a lookup-table-based Sbox. The key expansion is implemented as three functions in [`test.c`](test.c): `aes128_key_expansion()`, which fills out the Rijndael key schedule, `rot_word()`, which left-rotates a dword by 8 bits, and `sub_word()`, which replaces the bytes of a dword with the results of an Sbox transformation. Because `sub_word()` uses the secret-dependent input as an index into a lookup table in memory to compute the Sbox transformation, the input into the Sbox operation may be recovered via a cache-based side channel attack. This is a side channel vulnerability that can leak an AES key.
 
-Requirements
+Dependencies
 ------------
 
 - Linux
-- g++, gcc, make
-- diff
 - python 3.5 or greater
+- gcc/g++/make
+- diff
 
 Building and Running
 --------------------
 
-1. Download Intel PIN from https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-downloads and extract it somewhere.
+1. Build the Pin-based CEC by following instructions in the [main README](../README.md).
 
-2. cd to the pin_based_cec directory and build it:
-
-```bash
-make PIN_ROOT=<path to where you extracted PIN>
-```
-
-3. cd to the pin_based_cec/example directory and build the example program:
+2. Move to the `example` directory and build the example program:
 
 ```bash
+cd example
 make
 ```
 
 The example program does AES key expansion 10 times with random keys. Typically, the subroutine of interest should be exercised with a sufficient number of unique inputs to ensure a high confidence in the results. The Pin-based CEC test could be performed in conjunction with a code-coverage tool to ensure that all relevant sections of the code have been exercised sufficiently.
 
-4. Run the example program and observe that it works as expected:
+3. Run the example program and observe that it works as expected:
 
 ```bash
 ./keyexp-test
 ```
 
-5. Run the example program through Pin-based CEC:
+4. Run the example program through Pin-based CEC:
 
 ```bash
-make run PIN_ROOT=<path to where you extracted PIN>
+make run PIN_ROOT=<Pin top-level path>
 ```
 
-This command executes the keyexp-test program and instructs Pin-based CEC to instrument and track the aes128_key_expansion function.
+This command executes the `keyexp-test` program and instructs Pin-based CEC to instrument and track the `aes128_key_expansion()` function.
 
-6. Post process the logs to identify any secret-dependent differences:
+5. Post-process the logs to identify any secret-dependent differences:
 
 ```bash
 python ../post_process.py results.txt
@@ -52,17 +47,17 @@ python ../post_process.py results.txt
 
 This script applies the taint information to the execution traces and diffs them to check for secret-dependent non-constant execution or memory accesses.
 
-7. The script should output some text on stdout and in results.txt that looks like the following (but with more lines):
+6. The script should output some text on stdout and in `results.txt` that looks like the following (but with more lines):
 
 ```text
-	Addresses with tainted memory access differences:
+    Addresses with tainted memory access differences:
         55B0A4453214 --> sub_word (keyexp-test @ 1214)
         55B0A4453228 --> sub_word (keyexp-test @ 1228)
         55B0A445323C --> sub_word (keyexp-test @ 123C)
         55B0A4453250 --> sub_word (keyexp-test @ 1250)
 ```
 
-These are the addresses that had execution differences and were also identified as operating on secret data by the taint analysis. On the left of the arrow is the address, and on the right is the symbol name in the binary that contains that address (or "???" if no corresponding symbol could be found), the image name, and the offset within that image where the instruction is. In this case, 4 instructions in the sub_word() function are flagged. These are the 4 instructions that perform lookups into the Sbox table in memory. We can quickly verify that is the case by looking at the annotated disassembly of sub_word():
+These are the addresses that had execution differences and were also identified as operating on secret data by the taint analysis. On the left of the arrow is the address, and on the right is the symbol name in the binary that contains that address (or "???" if no corresponding symbol could be found), the image name, and the offset within that image where the instruction is. In this case, 4 instructions in the `sub_word()` function are flagged. These are the 4 instructions that perform lookups into the Sbox table in memory. We can quickly verify that is the case by looking at the annotated disassembly of `sub_word()`:
 
 ```text
 uint8_t s0 = AES_SBOX[b0];
