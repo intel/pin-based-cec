@@ -45,7 +45,7 @@ Building
 
 ```bash
 cd src
-make PIN_ROOT=<pin top-level path>
+make PIN_ROOT=<Pin top-level path>
 ```
 
 Usage
