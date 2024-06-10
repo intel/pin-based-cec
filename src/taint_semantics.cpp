@@ -250,12 +250,10 @@ void tat_instrument_operand(INS ins, xed_decoded_inst_t const* const xedd,
   }
 
   else {
-    std::ostringstream os;
-    os << "Unhandled operand " << operand_index << " "
+    std::cout << "Unhandled operand " << operand_index << " "
        << xed_operand_enum_t2str(operand_name)
        << " in Instruction: " << INS_Disassemble(ins)
        << " memops: " << INS_MemoryOperandCount(ins) << std::endl;
-    std::cout << os;
     PIN_ExitProcess(1);
   }
 }
