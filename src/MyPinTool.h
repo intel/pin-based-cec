@@ -15,6 +15,8 @@ ADDRINT PIN_FAST_ANALYSIS_CALL MemoryIsTainted();
 void PIN_FAST_ANALYSIS_CALL PremarshallMemoryOperand(tat_instr_t* instr,
                                                      uint32_t memop_idx,
                                                      ADDRINT memea);
+void PIN_FAST_ANALYSIS_CALL PremarshallMultiMemoryOperands(tat_instr_t* instr,
+                                                     PIN_MULTI_MEM_ACCESS_INFO* info);
 void PIN_FAST_ANALYSIS_CALL AnalyzeInstructionForTaint(tat_instr_t* instr);
 
 #endif

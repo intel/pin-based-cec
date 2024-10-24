@@ -118,6 +118,20 @@ void PIN_FAST_ANALYSIS_CALL PremarshallMemoryOperand(tat_instr_t* instr,
   instr->memops_memea[memop_idx] = memea;
 }
 
+void PIN_FAST_ANALYSIS_CALL PremarshallMultiMemoryOperands(tat_instr_t* instr,
+                                                           PIN_MULTI_MEM_ACCESS_INFO* info) {
+  instr->mem_operand_count = info->numberOfMemops;
+
+  for (UINT32 i = 0; i < info->numberOfMemops; i++) {
+    instr->memops_memea[i] = info->memop[i].memoryAddress;
+    instr->memops_bytes[i] = info->memop[i].bytesAccessed;
+    instr->memops_is_write[i] = (info->memop[i].memopType == PIN_MEMOP_STORE);
+    // Copy base and index register to all memops.
+    instr->base_register[i] = instr->base_register[0];
+    instr->index_register[i] = instr->index_register[0];
+  }
+}
+
 void PIN_FAST_ANALYSIS_CALL AnalyzeInstructionForTaint(tat_instr_t* instr) {
   gTaint->analyzeAndPropagate(instr);
 }

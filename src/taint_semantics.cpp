@@ -298,28 +298,43 @@ void tat_instrument(INS ins, void* v) {
                        IARG_PTR, instr, IARG_END);
   }
 
-  // Memory taint pre-marshalling
-  for (memop_idx = 0; memop_idx < instr->mem_operand_count; memop_idx++) {
-    // Update memop data
-    instr->memops_bytes[memop_idx] =
-        (uint32_t)INS_MemoryOperandSize(ins, memop_idx);
-    instr->memops_is_write[memop_idx] =
-        INS_MemoryOperandIsWritten(ins, memop_idx);
-
-    // Prepare pre-marshalling for data of memory operands
+  if (INS_HasScatteredMemoryAccess(ins)) {
+    // Overwrite memop info in the premarshall function.
     INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)MemoryIsTainted,
                      IARG_FAST_ANALYSIS_CALL, IARG_CALL_ORDER,
                      TAT_CALL_ORDER_PREMARSHALL,
                      // IARG_REG_VALUE, virtual_reg_tdata,
                      IARG_END);
-    INS_InsertThenCall(ins, IPOINT_BEFORE, (AFUNPTR)PremarshallMemoryOperand,
+    INS_InsertThenCall(ins, IPOINT_BEFORE, (AFUNPTR)PremarshallMultiMemoryOperands,
+                       IARG_FAST_ANALYSIS_CALL,
+                       // IARG_REG_VALUE, virtual_reg_tdata,
+                       IARG_PTR, instr, IARG_MULTI_MEMORYACCESS_EA,
+                       IARG_CALL_ORDER, TAT_CALL_ORDER_PREMARSHALL,
+                       IARG_END);
+  } else {
+    // Memory taint pre-marshalling
+    for (memop_idx = 0; memop_idx < instr->mem_operand_count; memop_idx++) {
+      instr->memops_is_write[memop_idx] =
+        INS_MemoryOperandIsWritten(ins, memop_idx);
+
+      // Update memop data
+      instr->memops_bytes[memop_idx] =
+        (uint32_t)INS_MemoryOperandSize(ins, memop_idx);
+
+      // Prepare pre-marshalling for data of memory operands
+      INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)MemoryIsTainted,
+                     IARG_FAST_ANALYSIS_CALL, IARG_CALL_ORDER,
+                     TAT_CALL_ORDER_PREMARSHALL,
+                     // IARG_REG_VALUE, virtual_reg_tdata,
+                     IARG_END);
+      INS_InsertThenCall(ins, IPOINT_BEFORE, (AFUNPTR)PremarshallMemoryOperand,
                        IARG_FAST_ANALYSIS_CALL,
                        // IARG_REG_VALUE, virtual_reg_tdata,
                        IARG_PTR, instr, IARG_UINT32, memop_idx, IARG_MEMORYOP_EA,
                        memop_idx, IARG_CALL_ORDER, TAT_CALL_ORDER_PREMARSHALL,
                        IARG_END);
+    }
   }
-
 }
 
 void TaintInstruction(INS ins, void* v) { tat_instrument(ins, v); }
